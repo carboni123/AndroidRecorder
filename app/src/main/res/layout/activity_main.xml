@@ -1,43 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
+<LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnRecord"
+    <!-- Container for buttons at the top, automatically centered horizontally -->
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/btnRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Recording"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop Recording"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play Recording"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send Audio File"
+            android:layout_marginBottom="20dp"/>
+    </LinearLayout>
+
+    <!-- ProgressBar to show loading state. Initially hidden. -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Recording"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginBottom="20dp" />
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="20dp"/>
 
-    <Button
-        android:id="@+id/btnStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop Recording"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/btnRecord"
-        android:layout_marginTop="20dp" />
-
+    <!-- TextView for status messages (recording status) -->
     <TextView
         android:id="@+id/tvRecordingStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="No recording yet"
-        android:layout_below="@id/btnStop"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"/>
 
-    <Button
-        android:id="@+id/btnPlay"
-        android:layout_width="wrap_content"
+    <!-- TextView for displaying the server response -->
+    <TextView
+        android:id="@+id/tvServerResponse"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Play Recording"
-        android:layout_below="@id/tvRecordingStatus"
-        android:layout_centerHorizontal="true"
+        android:text="Server response will appear here."
+        android:padding="8dp"
+        android:background="#EFEFEF"
+        android:textColor="#000000"
         android:layout_marginTop="20dp"/>
-</RelativeLayout>
+</LinearLayout>

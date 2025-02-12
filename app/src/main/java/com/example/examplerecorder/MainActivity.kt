@@ -15,13 +15,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.examplerecorder.sendRecordingToServer
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
     private var mediaRecorder: MediaRecorder? = null
-    private var outputUri: Uri? = null
+    var outputUri: Uri? = null
     private var fileDescriptor: android.os.ParcelFileDescriptor? = null
+
+    // Save the file name so it can be reused when uploading.
+    private var outputFileName: String? = null
 
     private lateinit var tvRecordingStatus: TextView
 
@@ -33,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         val recordButton = findViewById<Button>(R.id.btnRecord)
         val stopButton = findViewById<Button>(R.id.btnStop)
         val playButton = findViewById<Button>(R.id.btnPlay)
+        val sendButton = findViewById<Button>(R.id.btnSend)
 
         recordButton.setOnClickListener {
             if (checkPermission()) {
@@ -49,32 +54,34 @@ class MainActivity : AppCompatActivity() {
         playButton.setOnClickListener {
             playRecording()
         }
+
+        // Call the send function and pass both the outputUri and the recorded file's name.
+        sendButton.setOnClickListener {
+            sendRecordingToServer(outputUri, outputFileName ?: "default.3gp")
+        }
     }
 
     private fun startRecording() {
-        // Create a new MediaStore entry for the recording.
+        // Generate a unique file name.
+        outputFileName = "audiorecord_${System.currentTimeMillis()}.3gp"
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, "audiorecord_${System.currentTimeMillis()}.3gp")
+            put(MediaStore.MediaColumns.DISPLAY_NAME, outputFileName)
             put(MediaStore.MediaColumns.MIME_TYPE, "audio/3gpp")
-            // Save in the Music directory
             put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MUSIC)
         }
 
-        // Insert the entry into MediaStore and obtain its Uri.
         outputUri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, contentValues)
         if (outputUri == null) {
             Toast.makeText(this, "Error creating file for recording", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Open a ParcelFileDescriptor for writing.
         fileDescriptor = contentResolver.openFileDescriptor(outputUri!!, "w")
         if (fileDescriptor == null) {
             Toast.makeText(this, "Error opening file for recording", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Set up MediaRecorder with the file descriptor.
         mediaRecorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
@@ -107,7 +114,6 @@ class MainActivity : AppCompatActivity() {
         }
         mediaRecorder = null
 
-        // Close the file descriptor if it's open.
         fileDescriptor?.close()
         fileDescriptor = null
     }
@@ -118,7 +124,6 @@ class MainActivity : AppCompatActivity() {
             return
         }
         try {
-            // Initialize MediaPlayer to play the content URI.
             val mediaPlayer = MediaPlayer().apply {
                 setDataSource(this@MainActivity, outputUri!!)
                 prepare()
