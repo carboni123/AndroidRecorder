@@ -43,7 +43,7 @@ fun Activity.sendRecordingToServer(
         .setType(MultipartBody.FORM)
         .addFormDataPart(
             "file", fileName,
-            fileBytes.toRequestBody("audio/3gpp".toMediaTypeOrNull())
+            fileBytes.toRequestBody("audio/mp4".toMediaTypeOrNull())
         )
         .build()
 

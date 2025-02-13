@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -15,7 +16,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.examplerecorder.sendRecordingToServer
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -62,11 +62,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startRecording() {
-        // Generate a unique file name.
-        outputFileName = "audiorecord_${System.currentTimeMillis()}.3gp"
+        // Generate a unique file name with .m4a extension.
+        outputFileName = "audiorecord_${System.currentTimeMillis()}.m4a"
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, outputFileName)
-            put(MediaStore.MediaColumns.MIME_TYPE, "audio/3gpp")
+            put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp4")
             put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MUSIC)
         }
 
@@ -82,11 +82,17 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        mediaRecorder = MediaRecorder().apply {
+        mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            MediaRecorder(this)
+        } else {
+            MediaRecorder()  // Fallback for older devices
+        }
+
+        mediaRecorder?.apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4) // MP4/M4A container.
             setOutputFile(fileDescriptor!!.fileDescriptor)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)      // Use AAC encoder.
 
             try {
                 prepare()
