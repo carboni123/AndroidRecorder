@@ -80,11 +80,12 @@ fun Activity.sendRecordingToServer(
                         // Parse the JSON response from the server.
                         val jsonObject = JSONObject(responseBody)
                         val message = jsonObject.getString("message")
+                        val transcription = jsonObject.getString("transcription")
                         Toast.makeText(this@sendRecordingToServer, message, Toast.LENGTH_SHORT).show()
 
                         // Update the server response TextView.
                         val tvServerResponse = findViewById<TextView>(R.id.tvServerResponse)
-                        tvServerResponse.text = message
+                        tvServerResponse.text = transcription
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(this@sendRecordingToServer, "Failed to parse server response", Toast.LENGTH_SHORT).show()
